@@ -1,0 +1,325 @@
+.register-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  background: #f7f7f8;
+}
+
+.register-brand {
+  min-height: 100vh;
+  padding: 42px;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  background:
+    radial-gradient(
+      circle at 75% 25%,
+      rgba(255, 255, 255, 0.13),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 15% 85%,
+      rgba(255, 255, 255, 0.08),
+      transparent 28%
+    ),
+    linear-gradient(
+      145deg,
+      #9d0d18,
+      #c31320 55%,
+      #870b15
+    );
+}
+
+.register-brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  width: fit-content;
+  color: white;
+  font-family: "Manrope", sans-serif;
+}
+
+.register-brand-mark {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #c31320;
+  background: white;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.register-brand-logo strong,
+.register-brand-logo small {
+  display: block;
+}
+
+.register-brand-logo strong {
+  font-size: 15px;
+}
+
+.register-brand-logo small {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.register-brand-content {
+  max-width: 540px;
+  margin: auto 0;
+}
+
+.register-eyebrow,
+.register-form-eyebrow {
+  display: inline-flex;
+  color: #ffdce0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.register-brand-content h1 {
+  margin: 16px 0 20px;
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(43px, 5vw, 68px);
+  line-height: 0.98;
+  letter-spacing: -0.07em;
+}
+
+.register-brand-content h1 span {
+  color: #ffdce0;
+}
+
+.register-brand-content p {
+  max-width: 470px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.75;
+  font-size: 15px;
+}
+
+.register-brand-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.register-form-side {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 45px;
+  background: white;
+}
+
+.register-form-box {
+  width: min(440px, 100%);
+}
+
+.register-form-eyebrow {
+  color: #c31320;
+}
+
+.register-form-box h2 {
+  margin: 10px 0 8px;
+  color: #15171b;
+  font-family: "Manrope", sans-serif;
+  font-size: 38px;
+  letter-spacing: -0.055em;
+}
+
+.register-subtitle {
+  margin: 0 0 30px;
+  color: #6e727a;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.register-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid #ffd4d7;
+  border-radius: 12px;
+  color: #8e151d;
+  background: #fff0f1;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.register-alert strong {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: #c31320;
+  font-size: 11px;
+}
+
+.register-form {
+  display: grid;
+  gap: 17px;
+}
+
+.register-field {
+  display: grid;
+  gap: 7px;
+}
+
+.register-field label {
+  color: #15171b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.register-field input {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 14px;
+  border: 1px solid #dedfe3;
+  outline: none;
+  border-radius: 12px;
+  color: #15171b;
+  background: white;
+  font-size: 14px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.register-field input::placeholder {
+  color: #afb2b8;
+}
+
+.register-field input:focus {
+  border-color: #df1f2d;
+  box-shadow: 0 0 0 4px rgba(223, 31, 45, 0.08);
+}
+
+.register-submit {
+  width: 100%;
+  min-height: 49px;
+  margin-top: 5px;
+  border: 0;
+  border-radius: 13px;
+  color: white;
+  background: #c31320;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 12px 28px rgba(195, 19, 32, 0.18);
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.register-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #a70f1b;
+}
+
+.register-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.register-switch {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 23px;
+  color: #6e727a;
+  font-size: 12px;
+}
+
+.register-switch a,
+.register-back {
+  color: #c31320;
+  font-weight: 800;
+}
+
+.register-switch a:hover,
+.register-back:hover {
+  text-decoration: underline;
+}
+
+.register-back {
+  display: block;
+  width: fit-content;
+  margin: 24px auto 0;
+  font-size: 12px;
+}
+
+.register-mobile-logo {
+  display: none;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .register-page {
+    grid-template-columns: 1fr;
+  }
+
+  .register-brand {
+    min-height: 420px;
+  }
+
+  .register-form-side {
+    min-height: auto;
+    padding: 60px 30px;
+  }
+}
+
+@media (max-width: 720px) {
+  .register-brand {
+    min-height: 350px;
+    padding: 28px 22px;
+  }
+
+  .register-brand-content h1 {
+    font-size: 45px;
+  }
+
+  .register-brand-content p {
+    font-size: 14px;
+  }
+
+  .register-brand-footer {
+    margin-top: 45px;
+  }
+
+  .register-form-side {
+    padding: 45px 20px;
+  }
+
+  .register-form-box h2 {
+    font-size: 31px;
+  }
+
+  .register-mobile-logo {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 30px;
+    border-radius: 13px;
+    color: white;
+    background: #c31320;
+    font-family: "Manrope", sans-serif;
+    font-weight: 800;
+  }
+}
