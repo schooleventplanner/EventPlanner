@@ -1,0 +1,56 @@
+[33mbba1d1d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Initial commit
+ .gitignore                             |   22 [32m+[m
+ backend/app/_init_.py                  |    0
+ backend/app/core/_init_.py             |    0
+ backend/app/core/database.py           |   22 [32m+[m
+ backend/app/core/dependencies.py       |   47 [32m+[m
+ backend/app/core/security.py           |   63 [32m+[m
+ backend/app/main.py                    |   50 [32m+[m
+ backend/app/routes/_init_.py           |    0
+ backend/app/routes/announcements.py    |   65 [32m+[m
+ backend/app/routes/auth.py             |  109 [32m++[m
+ backend/app/routes/events.py           |  158 [32m+++[m
+ backend/app/routes/registrations.py    |  121 [32m++[m
+ backend/app/routes/results.py          |   81 [32m++[m
+ backend/app/schemas/_init_.py          |    0
+ backend/app/schemas/announcement.py    |   13 [32m+[m
+ backend/app/schemas/event.py           |   42 [32m+[m
+ backend/app/schemas/registration.py    |    8 [32m+[m
+ backend/app/schemas/result.py          |   19 [32m+[m
+ backend/app/schemas/user.py            |   15 [32m+[m
+ frontend/.gitignore                    |   24 [32m+[m
+ frontend/README.md                     |   16 [32m+[m
+ frontend/eslint.config.js              |   21 [32m+[m
+ frontend/index.html                    |   13 [32m+[m
+ frontend/package-lock.json             | 2423 [32m++++++++++++++++++++++++++++++++[m
+ frontend/package.json                  |   28 [32m+[m
+ frontend/public/favicon.svg            |    1 [32m+[m
+ frontend/public/icons.svg              |   24 [32m+[m
+ frontend/src/App.jsx                   |   50 [32m+[m
+ frontend/src/assets/hero.png           |  Bin [31m0[m -> [32m13057[m bytes
+ frontend/src/assets/react.svg          |    1 [32m+[m
+ frontend/src/assets/vite.svg           |    1 [32m+[m
+ frontend/src/components/Layout.jsx     |   26 [32m+[m
+ frontend/src/components/Navbar.jsx     |   49 [32m+[m
+ frontend/src/index.css                 | 1986 [32m++++++++++++++++++++++++++[m
+ frontend/src/main.jsx                  |   14 [32m+[m
+ frontend/src/pages/Announcements.jsx   |  186 [32m+++[m
+ frontend/src/pages/Dashboard.jsx       |  316 [32m+++++[m
+ frontend/src/pages/EventDetail.jsx     |  398 [32m++++++[m
+ frontend/src/pages/Events.jsx          |  335 [32m+++++[m
+ frontend/src/pages/Home.jsx            |  375 [32m+++++[m
+ frontend/src/pages/Login.jsx           |  255 [32m++++[m
+ frontend/src/pages/Register.jsx        |  236 [32m++++[m
+ frontend/src/pages/StaffDashboard.jsx  |  684 [32m+++++++++[m
+ frontend/src/services/api.js           |   67 [32m+[m
+ frontend/src/styles/Announcements.css  |  391 [32m++++++[m
+ frontend/src/styles/Dashboard.css      |  599 [32m++++++++[m
+ frontend/src/styles/EventDetail.css    |  554 [32m++++++++[m
+ frontend/src/styles/Events.css         |  799 [32m+++++++++++[m
+ frontend/src/styles/Global.css         |   74 [32m+[m
+ frontend/src/styles/Home.css           |  816 [32m+++++++++++[m
+ frontend/src/styles/Login.css          |  398 [32m++++++[m
+ frontend/src/styles/Register.css       |  325 [32m+++++[m
+ frontend/src/styles/StaffDashboard.css |  935 [32m++++++++++++[m
+ frontend/vite.config.js                |    7 [32m+[m
+ 54 files changed, 13262 insertions(+)
