@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .core.database import database
+from app.core.database import database
 
-from .routes.auth import router as auth_router
-from .routes.events import router as events_router
-from .routes.registrations import router as registrations_router
-from .routes.announcements import router as announcements_router
-from .routes.results import router as results_router
+from app.routes.auth import router as auth_router
+from app.routes.events import router as events_router
+from app.routes.registrations import router as registrations_router
+from app.routes.announcements import router as announcements_router
+from app.routes.results import router as results_router
 
 
 app = FastAPI(
