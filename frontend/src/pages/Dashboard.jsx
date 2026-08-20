@@ -1,314 +1,393 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Dashboard.css";
-
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://127.0.0.1:8000";
+import { getEvents, getAnnouncements } from "../services/api";
 
 function Dashboard() {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
-  const [registrations, setRegistrations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [events, setEvents] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [activeMenu, setActiveMenu] = useState("schedule");
 
   useEffect(() => {
-    async function loadDashboard() {
-      const token = localStorage.getItem("access_token");
-
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
-      try {
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-
-        const [userResponse, registrationsResponse] =
-          await Promise.all([
-            fetch(`${API_URL}/auth/me`, { headers }),
-            fetch(`${API_URL}/registrations/me`, { headers }),
-          ]);
-
-        const userData = await userResponse.json();
-        const registrationData =
-          await registrationsResponse.json();
-
-        if (!userResponse.ok) {
-          throw new Error(
-            userData.detail || "Sesi login tidak valid."
-          );
-        }
-
-        setUser(userData);
-
-        if (registrationsResponse.ok) {
-          setRegistrations(
-            Array.isArray(registrationData)
-              ? registrationData
-              : registrationData.registrations || []
-          );
-        }
-      } catch (err) {
-        setError(
-          err.message || "Gagal mengambil data dashboard."
+    Promise.all([
+      getEvents(),
+      getAnnouncements(),
+    ])
+      .then(([eventsData, announcementsData]) => {
+        setEvents(Array.isArray(eventsData) ? eventsData : []);
+        setAnnouncements(
+          Array.isArray(announcementsData)
+            ? announcementsData
+            : []
         );
-      } finally {
-        setLoading(false);
-      }
-    }
+      })
+      .catch(() => {});
+  }, []);
 
-    loadDashboard();
-  }, [navigate]);
-
-  function handleLogout() {
+  function logout() {
     localStorage.removeItem("access_token");
-    navigate("/login");
+    navigate("/");
   }
-
-  if (loading) {
-    return (
-      <main className="dashboard-page">
-        <div className="dashboard-state">
-          <div className="dashboard-spinner" />
-          <strong>Memuat dashboard</strong>
-          <span>Menyiapkan data akunmu...</span>
-        </div>
-      </main>
-    );
-  }
-
-  const approvedCount = registrations.filter(
-    (item) => item.status === "approved"
-  ).length;
-
-  const pendingCount = registrations.filter(
-    (item) => item.status === "pending"
-  ).length;
 
   return (
     <main className="dashboard-page">
-      <header className="dashboard-header">
-        <div className="dashboard-header-inner">
-          <Link to="/" className="dashboard-brand">
-            <span className="dashboard-brand-mark">SE</span>
+      <header className="app-header dashboard-header">
+        <Link to="/" className="brand">
+          <span className="brand-mark">SE</span>
 
-            <span>
-              <strong>School Event</strong>
-              <small>Planner</small>
-            </span>
-          </Link>
+          <span className="brand-name">
+            School Event
+            <strong>Planner</strong>
+          </span>
+        </Link>
 
-          <nav className="dashboard-nav">
-            <Link to="/events">Kegiatan</Link>
-
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="dashboard-logout"
-            >
-              Keluar
-            </button>
-          </nav>
+        <div className="header-actions">
+          <button
+            className="header-logout"
+            onClick={logout}
+          >
+            Keluar
+          </button>
         </div>
       </header>
 
-      <section className="dashboard-shell">
-        <div className="dashboard-hero">
+      <div className="dashboard-shell">
+        <section className="dashboard-hero">
           <div>
-            <span className="dashboard-eyebrow">
-              PESERTA
+            <span className="eyebrow">
+              DASHBOARD
             </span>
 
             <h1>
-              Halo,{" "}
-              <span>
-                {user?.name || "Peserta"}
-              </span>
+              Pusat <span>kegiatan.</span>
             </h1>
 
             <p>
-              Pantau kegiatan dan pendaftaranmu di sini.
+              Kelola dan lihat seluruh informasi kegiatan
+              sekolah.
             </p>
           </div>
+        </section>
 
-          <div className="dashboard-profile">
-            <div className="dashboard-avatar">
-              {(user?.name || "P")
-                .charAt(0)
-                .toUpperCase()}
-            </div>
-
-            <div>
-              <strong>
-                {user?.name || "Peserta"}
-              </strong>
-              <span>
-                {user?.email || "-"}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {error && (
-          <div className="dashboard-alert">
-            <strong>!</strong>
-            <span>{error}</span>
-          </div>
-        )}
-
-        <div className="dashboard-stats">
-          <div className="dashboard-stat dashboard-stat-accent">
-            <span>TOTAL PENDAFTARAN</span>
-            <strong>{registrations.length}</strong>
-            <small>Kegiatan yang kamu ikuti</small>
+        <section className="stats-grid">
+          <div className="stat-card accent">
+            <span>KEGIATAN</span>
+            <strong>{events.length}</strong>
+            <small>Total kegiatan</small>
           </div>
 
-          <div className="dashboard-stat">
-            <span>DISETUJUI</span>
-            <strong>{approvedCount}</strong>
-            <small>Pendaftaran diterima</small>
-          </div>
-
-          <div className="dashboard-stat">
-            <span>MENUNGGU</span>
-            <strong>{pendingCount}</strong>
-            <small>Masih dalam proses</small>
-          </div>
-
-          <div className="dashboard-stat">
-            <span>STATUS</span>
-            <strong className="dashboard-active">
-              AKTIF
+          <div className="stat-card">
+            <span>MENDATANG</span>
+            <strong>
+              {
+                events.filter(
+                  (event) => event.status === "upcoming"
+                ).length
+              }
             </strong>
-            <small>Akun peserta</small>
+            <small>Kegiatan mendatang</small>
           </div>
-        </div>
 
-        <section className="dashboard-section">
-          <div className="dashboard-section-heading">
+          <div className="stat-card">
+            <span>PENGUMUMAN</span>
+            <strong>{announcements.length}</strong>
+            <small>Informasi terbaru</small>
+          </div>
+
+          <div className="stat-card">
+            <span>STATUS</span>
+            <strong className="active-text">AKTIF</strong>
+            <small>Akun aktif</small>
+          </div>
+        </section>
+
+        <section className="content-section">
+          <div className="section-heading">
             <div>
-              <span className="dashboard-eyebrow">
-                AKTIVITAS
+              <span className="eyebrow">
+                MENU UTAMA
               </span>
-              <h2>Pendaftaran saya</h2>
-            </div>
 
-            <Link to="/events">
-              Jelajahi kegiatan ↗
-            </Link>
+              <h2>
+                Apa yang ingin kamu lihat?
+              </h2>
+            </div>
           </div>
 
-          {registrations.length === 0 ? (
-            <div className="dashboard-empty">
-              <div className="dashboard-empty-icon">
-                +
+          <div className="dashboard-menu">
+            <button
+              className={`dashboard-menu-item ${
+                activeMenu === "schedule" ? "active" : ""
+              }`}
+              onClick={() => setActiveMenu("schedule")}
+            >
+              <strong>01</strong>
+              <span>Jadwal Acara</span>
+              <small>Lihat jadwal kegiatan</small>
+            </button>
+
+            <button
+              className={`dashboard-menu-item ${
+                activeMenu === "events" ? "active" : ""
+              }`}
+              onClick={() => setActiveMenu("events")}
+            >
+              <strong>02</strong>
+              <span>Daftar Lomba</span>
+              <small>Pilih kegiatan yang ingin diikuti</small>
+            </button>
+
+            <button
+              className={`dashboard-menu-item ${
+                activeMenu === "locations" ? "active" : ""
+              }`}
+              onClick={() => setActiveMenu("locations")}
+            >
+              <strong>03</strong>
+              <span>Lokasi</span>
+              <small>Lihat lokasi kegiatan</small>
+            </button>
+
+            <button
+              className={`dashboard-menu-item ${
+                activeMenu === "participants" ? "active" : ""
+              }`}
+              onClick={() => setActiveMenu("participants")}
+            >
+              <strong>04</strong>
+              <span>Peserta</span>
+              <small>Lihat peserta kegiatan</small>
+            </button>
+
+            <button
+              className={`dashboard-menu-item ${
+                activeMenu === "announcements" ? "active" : ""
+              }`}
+              onClick={() => setActiveMenu("announcements")}
+            >
+              <strong>05</strong>
+              <span>Pengumuman</span>
+              <small>Informasi terbaru</small>
+            </button>
+          </div>
+        </section>
+
+        <section className="content-section">
+          {activeMenu === "schedule" && (
+            <>
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow">JADWAL</span>
+                  <h2>Jadwal acara</h2>
+                </div>
               </div>
 
-              <span className="dashboard-eyebrow">
-                BELUM ADA PENDAFTARAN
-              </span>
+              <div className="registration-list">
+                {events.length === 0 ? (
+                  <div className="empty-card">
+                    <h3>Belum ada jadwal</h3>
+                    <p>
+                      Jadwal kegiatan akan muncul di sini.
+                    </p>
+                  </div>
+                ) : (
+                  events.map((event) => (
+                    <div
+                      className="registration-card"
+                      key={event.id}
+                    >
+                      <div className="date-tile">
+                        <strong>{event.date}</strong>
+                      </div>
 
-              <h3>
-                Kamu belum mengikuti kegiatan.
-              </h3>
+                      <div className="registration-main">
+                        <span className="tag">
+                          KEGIATAN
+                        </span>
 
-              <p>
-                Jelajahi kegiatan sekolah dan temukan
-                sesuatu yang menarik untuk diikuti.
-              </p>
+                        <h3>{event.name}</h3>
 
-              <Link
-                to="/events"
-                className="dashboard-primary-button"
-              >
-                Lihat kegiatan
-              </Link>
-            </div>
-          ) : (
-            <div className="registration-list">
-              {registrations.map((registration, index) => {
-                const event =
-                  registration.event || registration;
+                        <p>
+                          {event.start_time} -{" "}
+                          {event.end_time}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </>
+          )}
 
-                const status =
-                  registration.status || "pending";
+          {activeMenu === "events" && (
+            <>
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow">
+                    DAFTAR LOMBA
+                  </span>
 
-                return (
-                  <article
-                    key={
-                      registration.id ||
-                      registration.event_id ||
-                      index
-                    }
+                  <h2>
+                    Pilih kegiatan
+                  </h2>
+                </div>
+
+                <Link
+                  to="/events"
+                  className="inline-link"
+                >
+                  Lihat semua ↗
+                </Link>
+              </div>
+
+              <div className="registration-list">
+                {events.map((event) => (
+                  <Link
+                    key={event.id}
+                    to={`/events/${event.id}`}
                     className="registration-card"
                   >
-                    <div className="registration-number">
-                      {String(index + 1).padStart(2, "0")}
+                    <div className="date-tile">
+                      <strong>↗</strong>
                     </div>
 
                     <div className="registration-main">
-                      <span className="registration-category">
+                      <span className="tag">
                         {event.category === "team"
                           ? "TIM"
                           : "INDIVIDU"}
                       </span>
 
-                      <h3>
-                        {event.name ||
-                          registration.event_name ||
-                          "Kegiatan"}
-                      </h3>
+                      <h3>{event.name}</h3>
 
-                      <p>
-                        {event.date ||
-                          registration.date ||
-                          "Tanggal belum tersedia"}
-                      </p>
+                      <p>{event.location}</p>
                     </div>
 
-                    <span
-                      className={`registration-status ${status}`}
-                    >
-                      {status === "approved"
-                        ? "Disetujui"
-                        : status === "pending"
-                          ? "Menunggu"
-                          : status === "closed"
-                            ? "Ditutup"
-                            : status}
+                    <span className="card-link">
+                      Lihat
                     </span>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
 
-                    {event.id && (
-                      <Link
-                        to={`/events/${event.id}`}
-                        className="registration-link"
-                      >
-                        Detail ↗
-                      </Link>
-                    )}
-                  </article>
-                );
-              })}
+          {activeMenu === "locations" && (
+            <>
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow">
+                    LOKASI
+                  </span>
+
+                  <h2>
+                    Lokasi kegiatan
+                  </h2>
+                </div>
+              </div>
+
+              <div className="registration-list">
+                {events.map((event) => (
+                  <div
+                    className="registration-card"
+                    key={event.id}
+                  >
+                    <div className="date-tile">
+                      <strong>⌖</strong>
+                    </div>
+
+                    <div className="registration-main">
+                      <span className="tag">
+                        LOKASI
+                      </span>
+
+                      <h3>{event.name}</h3>
+
+                      <p>{event.location}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {activeMenu === "participants" && (
+            <div className="empty-card large">
+              <div className="empty-icon">♙</div>
+
+              <h3>Data peserta</h3>
+
+              <p>
+                Data peserta akan ditampilkan
+                berdasarkan kegiatan yang dipilih.
+              </p>
             </div>
           )}
+
+          {activeMenu === "announcements" && (
+            <>
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow">
+                    PENGUMUMAN
+                  </span>
+
+                  <h2>
+                    Informasi terbaru
+                  </h2>
+                </div>
+
+                <Link
+                  to="/announcements"
+                  className="inline-link"
+                >
+                  Lihat semua ↗
+                </Link>
+              </div>
+
+              <div className="registration-list">
+                {announcements.length === 0 ? (
+                  <div className="empty-card">
+                    <h3>
+                      Belum ada pengumuman
+                    </h3>
+
+                    <p>
+                      Pengumuman terbaru akan muncul
+                      di sini.
+                    </p>
+                  </div>
+                ) : (
+                  announcements.map((item) => (
+                    <article
+                      key={item.id}
+                      className="registration-card"
+                    >
+                      <div className="date-tile">
+                        <strong>!</strong>
+                      </div>
+
+                      <div className="registration-main">
+                        <span className="tag">
+                          INFO
+                        </span>
+
+                        <h3>{item.title}</h3>
+
+                        <p>
+                          {item.content ||
+                            item.message}
+                        </p>
+                      </div>
+                    </article>
+                  ))
+                )}
+              </div>
+            </>
+          )}
         </section>
-      </section>
-
-      <footer className="dashboard-footer">
-        <div>
-          <strong>School Event Planner</strong>
-          <span>
-            Platform kegiatan dan perlombaan sekolah.
-          </span>
-        </div>
-
-        <span>&copy; 2026</span>
-      </footer>
+      </div>
     </main>
   );
 }

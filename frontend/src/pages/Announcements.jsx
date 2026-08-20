@@ -1,184 +1,63 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import "../styles/Announcements.css";
-
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://127.0.0.1:8000";
-
-function formatDate(isoString) {
-  if (!isoString) return "";
-
-  try {
-    return new Date(isoString).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  } catch {
-    return isoString;
-  }
-}
+import Navbar from "../components/Navbar";
+import { getAnnouncements } from "../services/api";
 
 function Announcements() {
-  const [announcements, setAnnouncements] = useState([]);
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    async function loadAnnouncements() {
-      try {
-        setLoading(true);
-        setError("");
-
-        const response = await fetch(`${API_URL}/announcements`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.detail || "Gagal mengambil pengumuman."
-          );
-        }
-
-        setAnnouncements(Array.isArray(data) ? data : []);
-      } catch (err) {
-        setError(
-          err.message || "Gagal mengambil pengumuman."
-        );
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadAnnouncements();
+    getAnnouncements()
+      .then((data) => setItems(Array.isArray(data) ? data : []))
+      .catch(() => setItems([]))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
-    <main className="announcements-page">
-      <header className="announcements-header">
-        <div className="announcements-container announcements-header-inner">
-          <Link to="/" className="announcements-brand">
-            <span className="announcements-brand-mark">SE</span>
+    <main className="page">
+      <Navbar />
 
-            <span className="announcements-brand-name">
-              School Event
-              <strong>Planner</strong>
-            </span>
-          </Link>
-
-          <nav className="announcements-nav">
-            <Link to="/" className="announcements-nav-link">
-              Beranda
-            </Link>
-
-            <Link to="/events" className="announcements-nav-link">
-              Kegiatan
-            </Link>
-
-            <Link
-              to="/announcements"
-              className="announcements-nav-link active"
-            >
-              Pengumuman
-            </Link>
-
-            <Link to="/login" className="announcements-nav-link">
-              Masuk
-            </Link>
-
-            <Link
-              to="/register"
-              className="announcements-nav-button"
-            >
-              Daftar
-            </Link>
-          </nav>
+      <section className="page-container page-main">
+        <div className="page-title">
+          <span className="home-eyebrow">INFORMASI</span>
+          <h1>Pengumuman</h1>
+          <p>Informasi terbaru mengenai kegiatan sekolah.</p>
         </div>
-      </header>
 
-      <section className="announcements-hero">
-        <div className="announcements-container">
-          <span className="announcements-eyebrow">
-            INFORMASI TERBARU
-          </span>
-
-          <h1>
-            Pengumuman
-            <span> kegiatan sekolah.</span>
-          </h1>
-
-          <p>
-            Ikuti kabar terbaru seputar kegiatan, jadwal, dan
-            perubahan penting dari panitia.
-          </p>
-        </div>
-      </section>
-
-      <section className="announcements-content">
-        <div className="announcements-container">
-          {loading && (
-            <div className="announcements-state">
-              <div className="announcements-spinner" />
-              <strong>Memuat pengumuman</strong>
-              <span>Menyiapkan informasi terbaru...</span>
-            </div>
-          )}
-
-          {!loading && error && (
-            <div className="announcements-state error">
-              <span className="announcements-state-label">
-                ERROR
-              </span>
-              <strong>Pengumuman gagal dimuat.</strong>
-              <p>{error}</p>
-            </div>
-          )}
-
-          {!loading && !error && announcements.length === 0 && (
-            <div className="announcements-state empty">
-              <div className="announcements-empty-icon">—</div>
-              <span className="announcements-state-label">
-                BELUM ADA PENGUMUMAN
-              </span>
-              <strong>Belum ada pengumuman saat ini.</strong>
-              <p>Pengumuman baru akan muncul di sini ketika tersedia.</p>
-            </div>
-          )}
-
-          {!loading && !error && announcements.length > 0 && (
-            <div className="announcements-list">
-              {announcements.map((item, index) => (
-                <article className="announcement-card" key={item.id}>
-                  <div className="announcement-number">
-                    {String(index + 1).padStart(2, "0")}
-                  </div>
-
-                  <div className="announcement-main">
-                    <span className="announcement-date">
-                      {formatDate(item.created_at)}
-                    </span>
-
-                    <h2>{item.title}</h2>
-
-                    <p>{item.content}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      <footer className="announcements-footer">
-        <div className="announcements-container announcements-footer-inner">
-          <div>
-            <strong>School Event Planner</strong>
-            <span>Platform kegiatan sekolah</span>
+        {loading ? (
+          <div className="home-state">
+            <div className="home-spinner" />
+            <strong>Memuat pengumuman...</strong>
           </div>
+        ) : items.length === 0 ? (
+          <div className="home-state">
+            <h3>Belum ada pengumuman.</h3>
+            <p>Pengumuman terbaru akan muncul di sini.</p>
+          </div>
+        ) : (
+          <div className="grid">
+            {items.map((item, index) => (
+              <article className="card announcement-card" key={item.id || index}>
+                <span className="home-eyebrow">
+                  PENGUMUMAN #{index + 1}
+                </span>
 
-          <span>© 2026 School Event Planner</span>
-        </div>
-      </footer>
+                <h2>{item.title || item.name}</h2>
+
+                <p>
+                  {item.content ||
+                    item.description ||
+                    "Tidak ada isi pengumuman."}
+                </p>
+
+                {item.date && (
+                  <small>{item.date}</small>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
     </main>
   );
 }

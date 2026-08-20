@@ -1,232 +1,115 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Register.css";
-
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://127.0.0.1:8000";
+import Navbar from "../components/Navbar";
+import { register } from "../services/api";
 
 function Register() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    name: "",
   });
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  function update(e) {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   }
 
-  async function handleSubmit(e) {
+  async function submit(e) {
     e.preventDefault();
     setError("");
-
-    if (form.password !== form.confirmPassword) {
-      setError("Konfirmasi password tidak cocok.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: form.name.trim(),
-          email: form.email.trim(),
-          password: form.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 422 && Array.isArray(data.detail)) {
-          const messages = data.detail.map((item) => {
-            const field = item.loc?.at(-1) || "field";
-            return `${field}: ${item.msg}`;
-          });
-
-          throw new Error(messages.join(", "));
-        }
-
-        throw new Error(
-          data.detail || "Registrasi gagal."
-        );
-      }
-
+      await register(form);
       navigate("/login");
-    } catch (err) {
-      setError(err.message || "Terjadi kesalahan.");
+    } catch (error) {
+      setError(error.message || "Pendaftaran gagal.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="register-page">
-      <section className="register-brand">
-        <Link to="/" className="register-brand-logo">
-          <span className="register-brand-mark">SE</span>
+    <main className="page">
+      <Navbar />
 
-          <span>
-            <strong>School Event</strong>
-            <small>Planner</small>
-          </span>
-        </Link>
+      <section className="page-container page-main">
+        <div className="auth-form-box card">
+          <span className="home-eyebrow">PESERTA</span>
 
-        <div className="register-brand-content">
-          <span className="register-eyebrow">
-            SCHOOL EVENT PLANNER
-          </span>
+          <h1>Buat akun</h1>
 
-          <h1>
-            Mulai ikut
-            <br />
-            <span>kegiatan sekolah.</span>
-          </h1>
-
-          <p>
-            Buat akun untuk mendaftar lomba, melihat
-            kegiatan yang kamu ikuti, dan memantau
-            status pendaftaranmu.
-          </p>
-        </div>
-
-        <div className="register-brand-footer">
-          <span>EVENTS · ACTIVITIES · PARTICIPATION</span>
-          <span>2026</span>
-        </div>
-      </section>
-
-      <section className="register-form-side">
-        <div className="register-form-box">
-          <Link to="/" className="register-mobile-logo">
-            SE
-          </Link>
-
-          <span className="register-form-eyebrow">
-            BUAT AKUN
-          </span>
-
-          <h2>Daftar</h2>
-
-          <p className="register-subtitle">
-            Isi data berikut untuk membuat akun peserta.
+          <p className="auth-subtitle">
+            Buat akun untuk mengikuti kegiatan sekolah.
           </p>
 
-          {error && (
-            <div className="register-alert">
-              <strong>!</strong>
-              <span>{error}</span>
-            </div>
-          )}
+          {error && <div className="alert">{error}</div>}
 
-          <form
-            className="register-form"
-            onSubmit={handleSubmit}
-          >
-            <div className="register-field">
-              <label htmlFor="name">
-                Nama lengkap
-              </label>
-
+          <form className="form" onSubmit={submit}>
+            <div className="field">
+              <label>Nama</label>
               <input
-                id="name"
                 name="name"
-                type="text"
-                placeholder="Masukkan nama lengkap"
                 value={form.name}
-                onChange={handleChange}
-                autoComplete="name"
+                onChange={update}
+                placeholder="Nama lengkap"
                 required
               />
             </div>
 
-            <div className="register-field">
-              <label htmlFor="email">
-                Email
-              </label>
-
+            <div className="field">
+              <label>Username</label>
               <input
-                id="email"
-                name="email"
+                name="username"
+                value={form.username}
+                onChange={update}
+                placeholder="Username"
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label>Email</label>
+              <input
                 type="email"
-                placeholder="Masukkan email"
+                name="email"
                 value={form.email}
-                onChange={handleChange}
-                autoComplete="email"
+                onChange={update}
+                placeholder="Email"
                 required
               />
             </div>
 
-            <div className="register-field">
-              <label htmlFor="password">
-                Password
-              </label>
-
+            <div className="field">
+              <label>Password</label>
               <input
-                id="password"
+                type="password"
                 name="password"
-                type="password"
-                placeholder="Buat password"
                 value={form.password}
-                onChange={handleChange}
-                autoComplete="new-password"
+                onChange={update}
+                placeholder="Password"
                 required
               />
             </div>
 
-            <div className="register-field">
-              <label htmlFor="confirmPassword">
-                Konfirmasi password
-              </label>
-
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Ulangi password"
-                value={form.confirmPassword}
-                onChange={handleChange}
-                autoComplete="new-password"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="register-submit"
-              disabled={loading}
-            >
-              {loading
-                ? "Membuat akun..."
-                : "Buat akun"}
+            <button className="btn btn-primary" disabled={loading}>
+              {loading ? "Mendaftarkan..." : "Daftar"}
             </button>
           </form>
 
-          <div className="register-switch">
-            <span>Sudah punya akun?</span>
-            <Link to="/login">Masuk</Link>
-          </div>
-
-          <Link to="/" className="register-back">
-            ← Kembali ke beranda
-          </Link>
+          <p className="auth-switch">
+            Sudah punya akun?
+            <Link to="/login"> Masuk</Link>
+          </p>
         </div>
       </section>
     </main>

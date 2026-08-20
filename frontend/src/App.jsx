@@ -1,49 +1,117 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import Announcements from "./pages/Announcements";
-import Dashboard from "./pages/Dashboard";
-import StaffDashboard from "./pages/StaffDashboard";
+import Locations from "./pages/Locations";
+import Participants from "./pages/Participants";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
-import "./index.css";
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+function PublicRoute({ children }) {
+  const token = localStorage.getItem("access_token");
+
+  if (token) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* PUBLIC */}
-        <Route path="/" element={<Home />} />
-        <Route path="/events" element={<Events />} />
-        <Route
-          path="/events/:id"
-          element={<EventDetail />}
-        />
-        <Route
-          path="/announcements"
-          element={<Announcements />}
-        />
+    <Routes>
+      {/* PUBLIC */}
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
 
-        {/* AUTH */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
 
-        {/* PARTICIPANT */}
-        <Route
-          path="/dashboard"
-          element={<Dashboard />}
-        />
+      {/* PROTECTED */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* STAFF */}
-        <Route
-          path="/admin"
-          element={<StaffDashboard />}
-        />
-      </Routes>
-    </BrowserRouter>
+      <Route
+        path="/events"
+        element={
+          <ProtectedRoute>
+            <Events />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/events/:id"
+        element={
+          <ProtectedRoute>
+            <EventDetail />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/locations"
+        element={
+          <ProtectedRoute>
+            <Locations />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/participants"
+        element={
+          <ProtectedRoute>
+            <Participants />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/announcements"
+        element={
+          <ProtectedRoute>
+            <Announcements />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* UNKNOWN ROUTE */}
+      <Route
+        path="*"
+        element={<Navigate to="/" replace />}
+      />
+    </Routes>
   );
 }
 

@@ -1,25 +1,23 @@
+import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 
-
-function Layout({ children }) {
+function Layout() {
   return (
-    <div className="app-layout">
+    <>
       <Navbar />
-
-      <main className="main-content">
-        {children}
+      <main>
+        <Outlet />
       </main>
 
       <footer className="footer">
-        <div className="footer-inner">
+        <div>
           <strong>School Event Planner</strong>
-
-          <span>
-            Platform kegiatan dan perlombaan sekolah.
-          </span>
+          <span>Platform kegiatan sekolah</span>
         </div>
+
+        <span>© 2026</span>
       </footer>
-    </div>
+    </>
   );
 }
 
